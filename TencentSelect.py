@@ -1,4 +1,5 @@
 import re
+import math
 
 
 class ListNode:
@@ -201,4 +202,178 @@ class Solution:
                 return False
         return not stack
 
-    
+    # 21.合并两个有序链表
+    # 法一：递归
+    def merge_two_lists1(self, l1: ListNode, l2: ListNode) -> ListNode:
+        if not l1:
+            return l2
+        if not l2:
+            return l1
+        if l1.val > l2.val:
+            l1, l2 = l2, l1
+        l1.next = self.merge_two_lists1(l1.next, l2)
+        return l1
+
+    # 法二：非递归
+    @staticmethod
+    def merge_two_lists2(l1: ListNode, l2: ListNode) -> ListNode:
+        res = ListNode(0)
+        node = res
+        while l1 and l2:
+            if l1.val < l2.val:
+                node.next, l1 = l1, l1.next
+            else:
+                node.next, l2 = l2, l2.next
+            node = node.next
+        if l1:
+            node.next = l1
+        if l2:
+            node.next = l2
+        return res.next
+
+    # 23.合并K个排序表
+    @staticmethod
+    def merge_k_lists(lists: [ListNode]) -> ListNode:
+        temp = []
+        for i in lists:
+            while i:
+                temp.append(i)
+                i = i.next
+        h = res = ListNode(0)
+        for node in sorted(temp, key=lambda n: n.val):
+            h.next = node
+            h = h.next
+        return res.next
+
+    # 26.删除排序数组中的重复项
+    # 快慢指针法，也可以使用倒序pop
+    @staticmethod
+    def remove_duplicates(nums: [int]) -> int:
+        i = 0
+        for j in range(1, len(nums)):
+            if nums[i] != nums[j]:
+                nums[i + 1] = nums[j]
+        return i + 1 if nums else 0
+
+    # 33.搜索旋转排序数组
+    @staticmethod
+    def search(nums: [int], target: int) -> int:
+        return nums.index(target) if target in nums else -1
+
+        # keys = [i for i in range(0, len(nums))]
+        # dictTemp = dict(zip(nums, keys))
+        # return dictTemp[target] if target in dictTemp.keys() else -1
+
+    # 43.字符串相乘
+
+    # 46.全排列
+    def permute(self, nums: [int]) -> [[int]]:
+        if len(nums) <= 1:
+            return [nums]
+        res = []
+        for i in range(len(nums)):
+            temp = self.permute(nums[:i] + nums[i + 1:])
+            for j in temp:
+                res.append([nums[i]] + j)
+        return res
+
+    # 53.最大子序和
+    @staticmethod
+    def max_sub_array(nums: [int]) -> int:
+        cur = res = nums[0]
+        for num in nums[1:]:
+            cur, res = max(cur + num, num), max(res, cur)
+        return res
+
+    # 54.螺旋矩阵
+    # 法一：递归
+    def spiral_order1(self, matrix: [[int]]) -> [int]:
+        if not matrix:
+            return []
+        res = []
+        res.extend(matrix[0])
+        new = [reversed(i) for i in matrix[1:]]
+        if not new:
+            return res
+        temp = self.spiral_order1([i for i in zip(*new)])
+        res.extend(temp)
+        return res
+
+    # 法二
+    @staticmethod
+    def spiral_order2(matrix: [[int]]) -> [int]:
+        if not matrix:
+            return []
+        res = []
+        m, n = len(matrix), len(matrix[0])
+        c, j = 0, 0 # c为总数count，j为计数count
+        while c < m * n:
+            for i in range(j, n - j):
+                res.append(matrix[j][i])
+                c += 1
+            for i in range(j + 1, m - j):
+                res.append(matrix[i][n - j - 1])
+                c += 1
+            for i in range(n - j - 2, j - 1, -1):
+                res.append(matrix[m - j -1][i])
+                c += 1
+            for i in range(m - j - 2, j, -1):
+                res.append(matrix[i][j])
+                c += 1
+            j += 1
+        return res[:m * n]
+
+    # 59.螺旋矩阵II
+    @staticmethod
+    def generate_matrix(n: int) -> [[int]]:
+        if n <= 0:
+            return [[]]
+        matrix = [[0] * n for _ in range(n)]
+        num = 1
+        c, j = n ** 2, 0
+        while num <= c:
+            for i in range(j, n - j):
+                matrix[j][i] = num
+                num += 1
+                if num > c:
+                    return matrix
+            for i in range(j + 1, n - j):
+                matrix[i][n - j - 1] = num
+                num += 1
+            for i in range(n - j - 2, j - 1, -1):
+                matrix[n - j - 1][i] = num
+                num += 1
+                if num > c:
+                    return matrix
+            for i in range(n - j - 2, j, -1):
+                matrix[i][j] = num
+                num += 1
+            j += 1
+        return matrix
+
+    # 61.旋转链表
+    @staticmethod
+    def rotate_right(head: ListNode, k: int) -> ListNode:
+        if k == 0 or not head or not head.next:
+            return head
+        h = head
+        n = 1
+        while h.next:
+            h = h.next
+            n += 1
+        if k % n == 0:
+            return head
+        h.next = head
+        h = h.next
+        m = n - k % n
+        for _ in range(m - 1):
+            h = h.next
+        new_h = h.next
+        h.next = None
+        return new_h
+
+    # 62.不同路径
+    @staticmethod
+    def unique_path(m: int, n: int) -> int:
+        return int(math.factorial(m + n - 2) / math.factorial(m - 1) / math.factorial(n - 1))
+
