@@ -1,5 +1,6 @@
 import re
 import math
+import itertools
 
 
 class ListNode:
@@ -377,3 +378,74 @@ class Solution:
     def unique_path(m: int, n: int) -> int:
         return int(math.factorial(m + n - 2) / math.factorial(m - 1) / math.factorial(n - 1))
 
+    # 70.爬楼梯
+    # 第n阶台阶的走法可以看做是1步加上n-1阶台阶的走法与2步加上n-2阶台阶的走法，所以可以转化为斐波那契数列
+    # dp[n] = dp[n - 1] + dp[n - 2]
+    @staticmethod
+    def climb_stairs(n: int) -> int:
+        p, q = 1, 2
+        if n == 1:
+            return 1
+        if n == 2:
+            return 2
+        for _ in range(2, n):
+            p, q = q, p+q
+        return q
+
+    # 78.子集
+    # 给定一组不含重复元素的整数数组nums，返回该数组所有可能的子集（幂集）
+    # 法一：
+    @staticmethod
+    def subsets1(nums: [int]) -> [[int]]:
+        res = [[]]
+        for num in nums:
+            for temp in res[:]:
+                x = temp[:]
+                x.append(num)
+                res.append(x)
+        return res
+
+    # 法二：回溯法递归
+    @staticmethod
+    def subsets2(nums: [int]) -> [[int]]:
+        res = []
+
+        def helper(i, tmp):
+            res.append(tmp)
+            for j in range(i, len(nums)):
+                helper(j + 1, tmp + [nums[j]])
+        helper(0, [])
+        return res
+
+    # 法三：
+    @staticmethod
+    def subsets3(nums: [int]) -> [[int]]:
+        res = [[]]
+        for i in nums:
+            res += [[i] + num for num in res]
+        return res
+
+    # 法四：
+    @staticmethod
+    def subsets4(nums: [int]) -> [[int]]:
+        res = []
+        for i in range(len(nums) + 1):
+            for tmp in itertools.combinations(nums, i):
+                res.append(tmp)
+        return res
+
+    # 88 合并两个有序数组
+    @staticmethod
+    def merge(nums1: [int], m: int, nums2: [int], n: int) -> None:
+        while n > 0:
+            if m and nums1[m - 1] > nums2[n - 1]:
+                nums1[m + n - 1], m = nums1[m - 1], m - 1
+            else:
+                nums1[m + n - 1], n = nums2[n - 1], n - 1
+
+    # 89 格雷编码
+    @staticmethod
+    def gray_code(n: int) -> [int]:
+        return [i ^ i >> 1 for i in range(1 << n)]
+
+    
