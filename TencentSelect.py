@@ -8,6 +8,11 @@ class ListNode:
         self.val = x
         self.next = None
 
+class TreeNode:
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
 
 class Solution:
     # 2.两数相加
@@ -447,5 +452,78 @@ class Solution:
     @staticmethod
     def gray_code(n: int) -> [int]:
         return [i ^ i >> 1 for i in range(1 << n)]
+
+    # 104 二叉树的最大深度
+    # 法一 DFS（深度优先算法）：
+    def max_depth1(self, root: TreeNode) -> int:
+        if not root:
+            return 0
+        left_height = self.max_depth1(root.left)
+        right_height = self.max_depth1(root.right)
+        return max(left_height, right_height) + 1
+
+    # 法二 迭代法：
+    @staticmethod
+    def max_depth2(root: TreeNode) -> int:
+        stack = []
+        if root:
+            stack.append((1, root))
+
+        depth = 0
+        while stack:
+            current_depth, root = stack.pop()
+            if root:
+                depth = max(depth, current_depth)
+                stack.append((current_depth + 1, root.left))
+                stack.append((current_depth + 1, root.right))
+        return depth
+
+    # 121 买卖股票的最佳时机
+    @staticmethod
+    def max_profit(prices: [int]) -> int:
+        n = len(prices)
+        dp_i_0, dp_i_1 = 0, -float("inf")
+        for i in range(n):
+            dp_i_0 = max(dp_i_0, dp_i_1 + prices[i])
+            dp_i_1 = max(dp_i_1, -prices[i])
+        return dp_i_0
+
+    # 122 买卖股票的最佳时机2
+    @staticmethod
+    def max_profit_second(prices: [int]) -> int:
+        dp_i_0, dp_i_1 = 0, -float("inf")
+        for i in range(len(prices)):
+            temp = dp_i_0
+            dp_i_0 = max(dp_i_0, dp_i_1 + prices[i])
+            dp_i_1 = max(dp_i_1, temp - prices[i])
+        return dp_i_0
+
+    # 124 二叉树中的最大路径和
+    def max_path_sum(self, root: TreeNode) -> int:
+        self.res = -float("inf")
+        self.max_gain(root)
+        return self.res
+
+    def max_gain(self, node: TreeNode) -> int:
+        if not node:
+            return 0
+        left_gain = max(self.max_gain(node.left), 0)
+        right_gain = max(self.max_gain(node.right), 0)
+        self.res = max(self.res, node.val + left_gain + right_gain)
+        return node.val + max(left_gain, right_gain)
+
+    # 136 只出现一次的数字
+    # 法一 数学法：
+    @staticmethod
+    def single_number1(nums: [int]) -> int:
+        return 2 * sum(set(nums)) - sum(nums)
+
+    # 法二 位操作：
+    @staticmethod
+    def single_number2(nums: [int]) -> int:
+        res = 0
+        for i in nums:
+            res ^= i
+        return res
 
     
