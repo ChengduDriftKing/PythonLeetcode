@@ -1,6 +1,7 @@
 import re
 import math
 import itertools
+import collections
 
 
 class ListNode:
@@ -526,4 +527,123 @@ class Solution:
             res ^= i
         return res
 
+    # 141 环形链表
+    # 法一 双指针
+    @staticmethod
+    def has_cycle1(head: ListNode) -> bool:
+        slow = fast = head
+        while slow and fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+            if slow is fast:
+                return True
+        return False
+
+    # 法二 set
+    @staticmethod
+    def has_cycle2(head: ListNode) -> bool:
+        res = set()
+        while head:
+            if head in res:
+                return True
+            res.add(head)
+            head = head.next
+        return False
+
+    # 142 环形链表2
+    @staticmethod
+    def detect_cycle(head: ListNode) -> ListNode:
+        res = set()
+        while head:
+            if head in res:
+                return head
+            res.add(head)
+            head = head.next
+        return None
+
+    # 148 排序链表
+    @staticmethod
+    def sort_list(head: ListNode) -> ListNode:
+        tmp = []
+        res = res_tmp = head
+        while head:
+            tmp.append(head.val)
+            head = head.next
+        tmp.sort()
+        for i in tmp:
+            res_tmp.val = i
+            res_tmp = res_tmp.next
+        return res
+
+    # 160 相交链表
+    @staticmethod
+    def get_intersection_node(headA: ListNode, headB: ListNode) -> ListNode:
+        if not headA or not headB:
+            return None
+        pA, pB = headA, headB
+        while pA != pB:
+            pA = headB if not pA else pA.next
+            pB = headA if not pB else pB.next
+        return pA
+
+    # 169 求众数
+    # 法一 数学法
+    @staticmethod
+    def majority_element1(nums: [int]) -> int:
+        nums.sort()
+        return nums[len(nums) // 2]
+
+    # 法二 字典
+    @staticmethod
+    def majority_element2(nums: [int]) -> int:
+        dic = {}
+        for i in nums:
+            if i not in dic.keys():
+                dic[i] = 0
+            dic[i] += 1
+            if dic[i] >= len(nums) / 2:
+                return i
+
+    # 206 反转链表
+    # 法一 迭代法
+    @staticmethod
+    def reverse_list1(head: ListNode) -> ListNode:
+        pre, cur = None, head
+        while cur:
+            cur.next, cur, pre = pre, cur.next, cur
+        return pre
+
+    # 法二 递归
+    def reverse_list2(self, head: ListNode) -> ListNode:
+        if not head or not head.next:
+            return head
+        p = self.reverse_list2(head.next)
+        head.next.next = head
+        head.next = None
+        return p
+
     
+
+
+# 146 LRU缓存机制
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.remain = capacity
+        self.dic = collections.OrderedDict()
+
+    def get(self, key: int) -> int:
+        if key not in self.dic:
+            return -1
+        self.dic.move_to_end(key)
+        return self.dic[key]
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.dic:
+            self.dic.pop(key)
+        else:
+            if self.remain > 0:
+                self.remain -= 1
+            else:
+                self.dic.popitem(last=False)
+        self.dic[key] = value
+
