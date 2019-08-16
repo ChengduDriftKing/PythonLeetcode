@@ -2,6 +2,7 @@ import re
 import math
 import itertools
 import collections
+import heapq
 
 
 class ListNode:
@@ -622,7 +623,81 @@ class Solution:
         head.next = None
         return p
 
-    
+    # 215 数组中的第K个最大元素
+    @staticmethod
+    def find_kth_largest(nums: [int], k: int) -> int:
+        return heapq.nlargest(k, nums)[-1]
+
+    # 217 存在重复元素
+    @staticmethod
+    def contains_duplicate(nums: [int]) -> bool:
+        return len(nums) > len(set(nums))
+
+    # 230 二叉搜索树中第K小的元素
+    # 法一
+    @staticmethod
+    def kth_smallest1(root: TreeNode, k: int) -> int:
+        stack = []
+        while root or stack:
+            while root:
+                stack.append(root)
+                root = root.left
+            root = stack.pop()
+            k -= 1
+            if k == 0:
+                return root.val
+            root = root.right
+
+    # 法二 中序遍历法
+    def kth_smallest2(self, root: TreeNode, k: int) -> int:
+        gen = self.mid_order(root)
+        for _ in range(k - 1):
+            next(gen)
+        return next(gen)
+
+    def mid_order(self, root: TreeNode):
+        if not root:
+            return
+        yield from self.mid_order(root.left)
+        yield root.val
+        yield from self.mid_order(root.right)
+
+    # 231 2的幂
+    @staticmethod
+    def is_power_of_two(n: int) -> bool:
+        return n > 0 and not (n & (n - 1))
+
+    # 235 二叉搜索树的最近公共祖先
+    @staticmethod
+    def lowest_common_ancestor_1(root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
+        while root:
+            if q.val > root.val and p.val > root.val:
+                root = root.right
+            elif q.val < root.val and p.val < root.val:
+                root = root.left
+            else:
+                return root
+
+    # 236 二叉树的最近公共祖先：
+    @staticmethod
+    def lowest_common_ancestor_2(root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
+        dic = {root: None}
+
+        def bfs(node):
+            if node:
+                if node.left:
+                    dic[node.left] = node
+                if node.right:
+                    dic[node.right] = node
+                bfs(node.left)
+                bfs(node.right)
+
+        bfs(root)
+        l1, l2 = p, q
+        while l1 != l2:
+            l1 = dic[l1] if l1 else q
+            l2 = dic[l2] if l2 else p
+        return l1
 
 
 # 146 LRU缓存机制
